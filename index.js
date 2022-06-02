@@ -3,6 +3,7 @@ const application = express();
 const http = require('http');
 const server = http.createServer(application);
 const cors = require('cors');
+const fs = require('fs');
 const io = require('socket.io')(server, {
 	cors: {
 		origin: 'localhost:3000',
@@ -56,7 +57,9 @@ io.on('connection', (socket) => {
 				downloadedApps[socket.id] = [];
 			}
 			downloadedApps[socket.id].push(app);
-			socket.emit('sendApp', app);
+			fs.readFile(`apps/${app.id}.txt`, (_err, buf) => {
+				socket.emit('sendApp', { app, buf });
+			});
 			console.log(socket.id + ' downloaded ' + app.name + ' version ' + app.version);
 		});
 
@@ -64,6 +67,13 @@ io.on('connection', (socket) => {
 			if (sockets.find((s) => s.socketId === socket.id).isAdmin) {
 				const appToUpdate = apps.find((app) => app.id === id);
 				const appToUpdateIndex = apps.findIndex((app) => app.id === id);
+				fs.readFile(`apps/${id}.txt`, 'utf8', function (err, data) {
+					var formatted = data.replace(/Version: [0-9]+/g, `Version: ${appToUpdate.version}`);
+
+					fs.writeFile(`apps/${id}.txt`, formatted, 'utf8', function (err) {
+						if (err) return console.log(err);
+					});
+				});
 				appToUpdate.version++;
 				apps[appToUpdateIndex] = appToUpdate;
 				console.log(`${appToUpdate.name} updated! ${appToUpdate.version}`);

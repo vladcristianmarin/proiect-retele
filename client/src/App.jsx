@@ -27,7 +27,14 @@ const App = () => {
 				console.log(apps);
 				setDownloadedApps(apps);
 			});
-			socket.on('sendApp', (app) => setDownloadedApp(app));
+			socket.on('sendApp', ({ app, buf }) => {
+				setDownloadedApp(app);
+				const url = window.URL.createObjectURL(new Blob([buf]));
+				const link = document.createElement('a');
+				link.href = url;
+				link.setAttribute('download', `${app.name}.txt`);
+				link.click();
+			});
 			socket.on('appUpdated', (app) => {
 				setNotify(true);
 				setApps((prev) => {
