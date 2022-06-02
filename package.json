@@ -1,0 +1,21 @@
+{
+	"name": "proiect-retele",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"server": "nodemon index.js",
+		"client": "npm start --prefix client",
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start-app": "concurrently \"npm run server\" \"npm run client\""
+	},
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"concurrently": "^7.2.1",
+		"cors": "^2.8.5",
+		"express": "^4.18.1",
+		"nodemon": "^2.0.16",
+		"socket.io": "^4.5.1"
+	}
+}
